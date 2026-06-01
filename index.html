@@ -939,14 +939,6 @@
                         <div class="chart-title">📊 Total de Vendas</div>
                         <canvas id="chartTotalSemanas"></canvas>
                     </div>
-                    <div class="chart-card">
-                        <div class="chart-title">🎯 Top 5 - Taxa de Conversão</div>
-                        <canvas id="chartConversao"></canvas>
-                    </div>
-                    <div class="chart-card">
-                        <div class="chart-title">🏆 Top 5 - Pontuação Geral</div>
-                        <canvas id="chartPontuacao"></canvas>
-                    </div>
                     <div class="chart-card full-width">
                         <div class="chart-title">🏪 Ranking de Lojas por Vendas</div>
                         <canvas id="chartLojas"></canvas>
@@ -1719,15 +1711,6 @@
         function updateCharts(dados) {
             Object.values(charts).forEach(chart => { if (chart) chart.destroy(); });
             charts = {};
-            const top5Taxa = [...dados].sort((a, b) => parseFloat(b.taxa) - parseFloat(a.taxa)).slice(0, 5);
-            charts.conversao = new Chart(document.getElementById('chartConversao').getContext('2d'), {
-                type: 'bar', data: { labels: top5Taxa.map(l => l.loja.substring(0, 20)), datasets: [{ label: 'Taxa (%)', data: top5Taxa.map(l => parseFloat(l.taxa)), backgroundColor: 'rgba(93, 216, 93, 1)', borderColor: 'rgba(63, 184, 63, 1)', borderWidth: 2, borderRadius: 10 }] },
-                options: { responsive: true, maintainAspectRatio: true, indexAxis: 'y', plugins: { legend: { display: false }, datalabels: { anchor: 'end', align: 'right', color: '#fff', font: { weight: 'bold', size: 12 }, formatter: (value) => value.toFixed(1) + '%' } }, scales: { x: { beginAtZero: true, ticks: { color: '#b8d4c8' }, grid: { color: 'rgba(255, 255, 255, 0.1)' } }, y: { ticks: { color: '#b8d4c8' }, grid: { color: 'rgba(255, 255, 255, 0.05)' } } } }
-            });
-            const top5Pontuacao = [...dadosCompletos.dadosPorPromotora].slice(0, 5);
-            charts.pontuacao = new Chart(document.getElementById('chartPontuacao').getContext('2d'), {
-                type: 'bar', data: { labels: top5Pontuacao.map(p => p.promotora), datasets: [{ label: 'Pontuação', data: top5Pontuacao.map(p => p.pontuacao_total), backgroundColor: 'rgba(93, 216, 93, 1)', borderColor: 'rgba(63, 184, 63, 1)', borderWidth: 2, borderRadius: 10 }] },
-                options: { responsive: true, maintainAspectRatio: true, indexAxis: 'y', plugins: { legend: { display: false }, datalabels: { anchor: 'end', align: 'right', color: '#fff', font: { weight: 'bold', size: 12 }, formatter: (value) => value.toFixed(1) + ' pts' } }, scales: { x: { beginAtZero: true, max: 100, ticks: { color: '#b8d4c8' }, grid: { color: 'rgba(255, 255, 255, 0.1)' } }, y: { ticks: { color: '#b8d4c8' }, grid: { color: 'rgba(255, 255, 255, 0.05)' } } } }
             });
             const semFiltro = filtroAtual.tipo === 'nenhum';
             const dadosLojas = semFiltro ? [...dados].sort((a, b) => b.total - a.total).slice(0, 10) : dados;
