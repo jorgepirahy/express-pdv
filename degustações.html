@@ -1739,7 +1739,15 @@
                     { nome: 'Semana 7\n(27-28/03)', totalVendas: 405,  lojas: 7,  dias: 2 }
                 ];
             
-            const semanasParaExibir = semFiltro ? semanasConfig.slice(-5) : semanasConfig;
+            let semanasParaExibir;
+            if (semFiltro) {
+                semanasParaExibir = semanasConfig.slice(-5);
+            } else if (filtroAtual.tipo === 'calendario' && datasSelecionadas && datasSelecionadas.length > 0) {
+                const filtrados = semanasConfig.filter(s => datasSelecionadas.includes(s.nome));
+                semanasParaExibir = filtrados.length > 0 ? filtrados : semanasConfig;
+            } else {
+                semanasParaExibir = semanasConfig;
+            }
             const dadosSemanas = semanasParaExibir.map(config => {
                 const mediaPorLojaDia = config.totalVendas / (config.lojas * config.dias);
                 return {
