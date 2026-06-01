@@ -1410,46 +1410,54 @@
         }
 
         function loadData() {
-            const totalVendas = dadosAtuais.reduce((sum, item) => sum + item.total, 0);
-            const totalAbordagens = dadosAtuais.reduce((sum, item) => {
-                return sum + (typeof item.abordagens === 'number' ? item.abordagens : 0);
-            }, 0);
-            const totalItens = dadosAtuais.length;
-            const sellout = totalVendas * CUSTO_MEDIO;
-            const mediaPorUnidade = CUSTO_MEDIO;
-            
-            // Verificar se há dados de abordagens válidos
-            const temAbordagens = dadosAtuais.some(item => typeof item.abordagens === 'number' && item.abordagens > 0);
-            
-            // Calcular número de dias no filtro
-            const numDias = (filtroAtual.tipo === 'calendario' && datasSelecionadas && datasSelecionadas.length > 0) 
-                ? datasSelecionadas.length 
-                : DIAS_TOTAIS_CAMPANHA; // Se não há filtro, considera todos os 13 dias
-            
-            // Calcular venda média corretamente
-            let vendaMediaPorItem;
-            let labelItem;
-            let subtitleMedia;
-            
-            if (filtroAtual.tipo === 'loja') {
-                // Filtro por loja específica - média por dia
-                vendaMediaPorItem = totalVendas / totalItens;
-                labelItem = 'dias';
-                subtitleMedia = 'unidades por dia';
-            } else if (filtroAtual.tipo === 'calendario' && datasSelecionadas && datasSelecionadas.length > 0) {
-                // Filtro por calendário - média por loja por dia
-                const numDias = datasSelecionadas.length;
-                const numLojas = totalItens; // número de lojas únicas nos dados consolidados
-                vendaMediaPorItem = totalVendas / (numLojas * numDias);
-                labelItem = 'lojas';
-                subtitleMedia = `unidades por loja/dia (${numLojas} lojas × ${numDias} dias)`;
+            // Detectar modo período (datas_disponiveis tem nomes de período, não datas DD/MM/YYYY)
+            const isPeriodMode = dadosCompletos.datas_disponiveis.length > 0 &&
+                !/^\d{2}\/\d{2}\/\d{4}$/.test(dadosCompletos.datas_disponiveis[0]);
+            const filtroPeriodoAtivo = filtroAtual.tipo === 'calendario' && isPeriodMode &&
+                datasSelecionadas && datasSelecionadas.length > 0;
+
+            let totalVendas, totalAbordagens, totalItens, temAbordagens, vendaMediaPorItem, labelItem, subtitleMedia;
+
+            if (filtroPeriodoAtivo && dadosCompletos._periodos) {
+                // Usar agregados do próprio período selecionado
+                const periodosSel = dadosCompletos._periodos.filter(p => datasSelecionadas.includes(p.nome));
+                const src = periodosSel.length > 0 ? periodosSel : dadosCompletos._periodos;
+                totalVendas    = src.reduce((s, p) => s + p.vendas, 0);
+                totalAbordagens = src.reduce((s, p) => s + p.abordagens, 0);
+                temAbordagens  = totalAbordagens > 0;
+                totalItens     = dadosAtuais.length; // nº de lojas visíveis
+                const totalDias  = src.reduce((s, p) => s + countDaysInPeriod(p.nome), 0);
+                const mediaLojas = Math.round(src.reduce((s, p) => s + (p.nLojas || 1), 0) / src.length);
+                vendaMediaPorItem = totalDias > 0 && mediaLojas > 0
+                    ? totalVendas / (mediaLojas * totalDias)
+                    : totalVendas / Math.max(totalItens, 1);
+                labelItem   = 'lojas';
+                subtitleMedia = `un/loja/dia (${mediaLojas} lojas × ${totalDias} dias)`;
             } else {
-                // Sem filtro ou filtro "TODOS" - média por loja
-                vendaMediaPorItem = totalVendas / totalItens;
-                labelItem = 'lojas';
-                subtitleMedia = 'unidades por loja';
+                totalVendas     = dadosAtuais.reduce((sum, item) => sum + item.total, 0);
+                totalAbordagens = dadosAtuais.reduce((sum, item) =>
+                    sum + (typeof item.abordagens === 'number' ? item.abordagens : 0), 0);
+                totalItens  = dadosAtuais.length;
+                temAbordagens = dadosAtuais.some(item => typeof item.abordagens === 'number' && item.abordagens > 0);
+
+                if (filtroAtual.tipo === 'loja') {
+                    vendaMediaPorItem = totalVendas / totalItens;
+                    labelItem   = 'dias';
+                    subtitleMedia = 'unidades por dia';
+                } else if (filtroAtual.tipo === 'calendario' && datasSelecionadas && datasSelecionadas.length > 0) {
+                    const numDias  = datasSelecionadas.length;
+                    const numLojas = totalItens;
+                    vendaMediaPorItem = totalVendas / (numLojas * numDias);
+                    labelItem   = 'lojas';
+                    subtitleMedia = `unidades por loja/dia (${numLojas} lojas × ${numDias} dias)`;
+                } else {
+                    vendaMediaPorItem = totalVendas / Math.max(totalItens, 1);
+                    labelItem   = 'lojas';
+                    subtitleMedia = 'unidades por loja';
+                }
             }
-            
+
+            const sellout = totalVendas * CUSTO_MEDIO;
             const taxaConversaoGeral = temAbordagens ? (totalVendas / totalAbordagens * 100).toFixed(2) + '%' : 'Sem dados';
             const exibirAbordagens = temAbordagens ? totalAbordagens : 'Sem dados';
             
