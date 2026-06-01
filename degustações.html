@@ -1331,31 +1331,38 @@
                 const datasFormatadas = datasSelecionadas.sort().join(', ');
                 document.getElementById('currentFilter').textContent = `🏢 Rede ${rede} | 📅 ${datasFormatadas}`;
             } else {
-                // Filtro apenas por calendário (comportamento original consolidado)
                 filtroAtual = { tipo: 'calendario', valor: datasSelecionadas };
-                const lojasConsolidadas = {};
-                datasSelecionadas.forEach(data => {
-                    const lojasDia = dadosCompletos.dadosPorDia[data];
-                    if (lojasDia && Array.isArray(lojasDia)) {
-                        lojasDia.forEach(loja => {
-                            if (!lojasConsolidadas[loja.loja]) {
-                                lojasConsolidadas[loja.loja] = { loja: loja.loja, abordagens: 0, total: 0, potinhos: 0 };
-                            }
-                            // Somar apenas valores numéricos
-                            if (typeof loja.abordagens === 'number') lojasConsolidadas[loja.loja].abordagens += loja.abordagens;
-                            lojasConsolidadas[loja.loja].total += loja.total;
-                            if (typeof loja.potinhos === 'number') lojasConsolidadas[loja.loja].potinhos += loja.potinhos;
-                        });
-                    }
-                });
-                dadosAtuais = Object.values(lojasConsolidadas).map(loja => ({
-                    loja: loja.loja, 
-                    abordagens: loja.abordagens, 
-                    total: loja.total, 
-                    potinhos: loja.potinhos,
-                    taxa: loja.abordagens > 0 ? `${((loja.total / loja.abordagens) * 100).toFixed(2)}%` : 'Sem dados'
-                })).sort((a, b) => b.total - a.total);
-                const datasFormatadas = datasSelecionadas.sort().join(', ');
+                const isPeriodMode = dadosCompletos.datas_disponiveis.length > 0 &&
+                    !/^\d{2}\/\d{2}\/\d{4}$/.test(dadosCompletos.datas_disponiveis[0]);
+
+                if (isPeriodMode) {
+                    // Modo período: dados de lojas vêm do TODOS (tabela de lojas do CONSOLIDADO)
+                    dadosAtuais = [...(dadosCompletos.dadosPorDia['TODOS'] || [])];
+                } else {
+                    // Modo data: consolida lojas pelos dias selecionados
+                    const lojasConsolidadas = {};
+                    datasSelecionadas.forEach(data => {
+                        const lojasDia = dadosCompletos.dadosPorDia[data];
+                        if (lojasDia && Array.isArray(lojasDia)) {
+                            lojasDia.forEach(loja => {
+                                if (!lojasConsolidadas[loja.loja]) {
+                                    lojasConsolidadas[loja.loja] = { loja: loja.loja, abordagens: 0, total: 0, potinhos: 0 };
+                                }
+                                if (typeof loja.abordagens === 'number') lojasConsolidadas[loja.loja].abordagens += loja.abordagens;
+                                lojasConsolidadas[loja.loja].total += loja.total;
+                                if (typeof loja.potinhos === 'number') lojasConsolidadas[loja.loja].potinhos += loja.potinhos;
+                            });
+                        }
+                    });
+                    dadosAtuais = Object.values(lojasConsolidadas).map(loja => ({
+                        loja: loja.loja,
+                        abordagens: loja.abordagens,
+                        total: loja.total,
+                        potinhos: loja.potinhos,
+                        taxa: loja.abordagens > 0 ? `${((loja.total / loja.abordagens) * 100).toFixed(2)}%` : 'Sem dados'
+                    })).sort((a, b) => b.total - a.total);
+                }
+                const datasFormatadas = datasSelecionadas.join(', ');
                 document.getElementById('currentFilter').textContent = `📅 Mostrando: ${datasFormatadas}`;
             }
             
