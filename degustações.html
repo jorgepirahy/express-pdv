@@ -1040,6 +1040,16 @@
 
 <script>
         Chart.register(ChartDataLabels);
+
+        function fmt(n) {
+            if (typeof n !== 'number' || isNaN(n)) return n;
+            return Math.round(n).toLocaleString('pt-BR');
+        }
+        function fmtDec(n, dec = 1) {
+            if (typeof n !== 'number' || isNaN(n)) return n;
+            return n.toLocaleString('pt-BR', { minimumFractionDigits: dec, maximumFractionDigits: dec });
+        }
+
         const CUSTO_MEDIO = 6.78;
         const CUSTO_DEGUSTACAO_TOTAL = 20220.00; // Custo total da campanha de degustação
         const DIAS_TOTAIS_CAMPANHA = 13; // Total de dias da campanha
@@ -1417,12 +1427,12 @@
             const exibirAbordagens = temAbordagens ? totalAbordagens : 'Sem dados';
             
             document.getElementById('metrics').innerHTML = `
-                <div class="metric-card"><div class="metric-label">Total de Vendas</div><div class="metric-value">${totalVendas}</div><div class="metric-subtitle">unidades vendidas</div></div>
-                <div class="metric-card"><div class="metric-label">Abordagens</div><div class="metric-value">${exibirAbordagens}</div><div class="metric-subtitle">clientes abordados</div></div>
-                <div class="metric-card"><div class="metric-label">Sell Out</div><div class="metric-value">R$ ${sellout.toFixed(0)}</div><div class="metric-subtitle">vendas estimadas</div></div>
-                <div class="metric-card"><div class="metric-label">Venda Média</div><div class="metric-value">${vendaMediaPorItem.toFixed(1)}</div><div class="metric-subtitle">${subtitleMedia}</div></div>
+                <div class="metric-card"><div class="metric-label">Total de Vendas</div><div class="metric-value">${fmt(totalVendas)}</div><div class="metric-subtitle">unidades vendidas</div></div>
+                <div class="metric-card"><div class="metric-label">Abordagens</div><div class="metric-value">${typeof exibirAbordagens === 'number' ? fmt(exibirAbordagens) : exibirAbordagens}</div><div class="metric-subtitle">clientes abordados</div></div>
+                <div class="metric-card"><div class="metric-label">Sell Out</div><div class="metric-value">R$ ${fmt(sellout)}</div><div class="metric-subtitle">vendas estimadas</div></div>
+                <div class="metric-card"><div class="metric-label">Venda Média</div><div class="metric-value">${fmtDec(vendaMediaPorItem)}</div><div class="metric-subtitle">${subtitleMedia}</div></div>
                 <div class="metric-card"><div class="metric-label">Taxa de Conversão</div><div class="metric-value">${taxaConversaoGeral}</div><div class="metric-subtitle">taxa geral</div></div>
-                <div class="metric-card"><div class="metric-label">${labelItem.charAt(0).toUpperCase() + labelItem.slice(1)}</div><div class="metric-value">${totalItens}</div><div class="metric-subtitle">no filtro</div></div>
+                <div class="metric-card"><div class="metric-label">${labelItem.charAt(0).toUpperCase() + labelItem.slice(1)}</div><div class="metric-value">${fmt(totalItens)}</div><div class="metric-subtitle">no filtro</div></div>
             `;
             updateCharts(dadosAtuais);
         }
@@ -1465,7 +1475,7 @@
                 else if (index === 1) { rowClass = 'top-2'; medal = '<span class="medal">🥈</span>'; }
                 else if (index === 2) { rowClass = 'top-3'; medal = '<span class="medal">🥉</span>'; }
                 tr.className = rowClass;
-                tr.innerHTML = `<td>${medal}<strong>${row.loja}</strong></td><td>${row.abordagens}</td><td><strong>${row.total}</strong></td><td>${row.potinhos}</td><td><strong>${row.taxa}</strong></td>`;
+                tr.innerHTML = `<td>${medal}<strong>${row.loja}</strong></td><td>${typeof row.abordagens === 'number' ? fmt(row.abordagens) : row.abordagens}</td><td><strong>${fmt(row.total)}</strong></td><td>${typeof row.potinhos === 'number' ? fmt(row.potinhos) : row.potinhos}</td><td><strong>${row.taxa}</strong></td>`;
                 tbody.appendChild(tr);
             });
             
@@ -1475,7 +1485,7 @@
             
             const trTotal = document.createElement('tr');
             trTotal.className = 'total-row';
-            trTotal.innerHTML = `<td><strong>📊 TOTAL</strong></td><td><strong>${exibirAbordagens}</strong></td><td><strong>${totalVendas}</strong></td><td><strong>${exibirPotinhos}</strong></td><td><strong>${taxaTotal}</strong></td>`;
+            trTotal.innerHTML = `<td><strong>📊 TOTAL</strong></td><td><strong>${typeof exibirAbordagens === 'number' ? fmt(exibirAbordagens) : exibirAbordagens}</strong></td><td><strong>${fmt(totalVendas)}</strong></td><td><strong>${typeof exibirPotinhos === 'number' ? fmt(exibirPotinhos) : exibirPotinhos}</strong></td><td><strong>${taxaTotal}</strong></td>`;
             tbody.appendChild(trTotal);
         }
 
@@ -1534,7 +1544,7 @@
                 else if (index === 1) { rowClass = 'top-2'; medal = '<span class="medal">🥈</span>'; }
                 else if (index === 2) { rowClass = 'top-3'; medal = '<span class="medal">🥉</span>'; }
                 tr.className = rowClass;
-                tr.innerHTML = `<td>${medal}<strong>${row.promotora}</strong></td><td><strong style=\"color: #4ade80; font-size: 1.2em;\">${row.pontuacao_str} pts</strong></td><td style=\"text-align: center;\">${row.loja || '-'}</td><td>${row.abordagens}</td><td><strong>${row.total}</strong></td><td>${row.potinhos}</td><td><strong>${row.taxa}</strong></td>`;
+                tr.innerHTML = `<td>${medal}<strong>${row.promotora}</strong></td><td><strong style=\"color: #4ade80; font-size: 1.2em;\">${row.pontuacao_str} pts</strong></td><td style=\"text-align: center;\">${row.loja || '-'}</td><td>${typeof row.abordagens === 'number' ? fmt(row.abordagens) : row.abordagens}</td><td><strong>${fmt(row.total)}</strong></td><td>${typeof row.potinhos === 'number' ? fmt(row.potinhos) : row.potinhos}</td><td><strong>${row.taxa}</strong></td>`;
                 tbody.appendChild(tr);
             });
             
@@ -1544,7 +1554,7 @@
             
             const trTotal = document.createElement('tr');
             trTotal.className = 'total-row';
-            trTotal.innerHTML = `<td><strong>📊 TOTAL</strong></td><td><strong>-</strong></td><td><strong>-</strong></td><td><strong>${exibirAbordagens}</strong></td><td><strong>${totalVendas}</strong></td><td><strong>${exibirPotinhos}</strong></td><td><strong>${taxaTotal}</strong></td>`;
+            trTotal.innerHTML = `<td><strong>📊 TOTAL</strong></td><td><strong>-</strong></td><td><strong>-</strong></td><td><strong>${typeof exibirAbordagens === 'number' ? fmt(exibirAbordagens) : exibirAbordagens}</strong></td><td><strong>${fmt(totalVendas)}</strong></td><td><strong>${typeof exibirPotinhos === 'number' ? fmt(exibirPotinhos) : exibirPotinhos}</strong></td><td><strong>${taxaTotal}</strong></td>`;
             tbody.appendChild(trTotal);
         }
 
@@ -1688,7 +1698,7 @@
             const dadosLojas = semFiltro ? [...dados].sort((a, b) => b.total - a.total).slice(0, 10) : dados;
             charts.lojas = new Chart(document.getElementById('chartLojas').getContext('2d'), {
                 type: 'bar', data: { labels: dadosLojas.map(l => l.loja), datasets: [{ label: 'Total de Vendas', data: dadosLojas.map(l => l.total), backgroundColor: 'rgba(93, 216, 93, 1)', borderColor: 'rgba(63, 184, 63, 1)', borderWidth: 2, borderRadius: 8 }] },
-                options: { responsive: true, maintainAspectRatio: true, indexAxis: 'y', plugins: { legend: { display: false }, datalabels: { anchor: 'end', align: 'right', color: '#fff', font: { weight: 'bold', size: 12 } } }, scales: { x: { beginAtZero: true, ticks: { color: '#b8d4c8' }, grid: { color: 'rgba(255, 255, 255, 0.1)' } }, y: { ticks: { color: '#b8d4c8' }, grid: { color: 'rgba(255, 255, 255, 0.05)' } } } }
+                options: { responsive: true, maintainAspectRatio: true, indexAxis: 'y', plugins: { legend: { display: false }, datalabels: { anchor: 'end', align: 'right', color: '#fff', font: { weight: 'bold', size: 12 }, formatter: (value) => fmt(value) } }, scales: { x: { beginAtZero: true, ticks: { color: '#b8d4c8', callback: (v) => fmt(v) }, grid: { color: 'rgba(255, 255, 255, 0.1)' } }, y: { ticks: { color: '#b8d4c8' }, grid: { color: 'rgba(255, 255, 255, 0.05)' } } } }
             });
             const dadosAbordagens = semFiltro ? [...dados].sort((a, b) => b.total - a.total).slice(0, 10) : dados;
             charts.abordagens = new Chart(document.getElementById('chartAbordagens').getContext('2d'), {
@@ -1751,7 +1761,7 @@
                                 ctx.textAlign = 'center';
                                 ctx.textBaseline = 'bottom';
                                 ctx.fillText(
-                                    s.mediaPorLojaDia.toFixed(1),
+                                    fmtDec(s.mediaPorLojaDia),
                                     bar.x,
                                     bar.y - 10
                                 );
@@ -1797,7 +1807,7 @@
                             ticks: { 
                                 color: '#b8d4c8',
                                 callback: function(value) {
-                                    return value.toFixed(0) + ' un';
+                                    return fmt(value) + ' un';
                                 }
                             },
                             grid: { color: 'rgba(255, 255, 255, 0.1)' },
@@ -1846,7 +1856,7 @@
                                 ctx.textAlign = 'center';
                                 ctx.textBaseline = 'bottom';
                                 ctx.fillText(
-                                    s.total,
+                                    fmt(s.total),
                                     bar.x,
                                     bar.y - 10
                                 );
@@ -1892,7 +1902,7 @@
                             ticks: { 
                                 color: '#b8d4c8',
                                 callback: function(value) {
-                                    return value + ' un';
+                                    return fmt(value) + ' un';
                                 }
                             },
                             grid: { color: 'rgba(255, 255, 255, 0.1)' },
