@@ -1041,6 +1041,26 @@
 <script>
         Chart.register(ChartDataLabels);
 
+        function countDaysInPeriod(nome) {
+            // "22 e 23 - 05"  → 2 dias
+            // "01, 02 e 03 - 05" → 3 dias
+            // "15-17/01" ou "(15-17/01)" → 3 dias
+            const beforeDash = nome.split(' - ')[0];
+            const parts = beforeDash.split(' e ');
+            const days = [];
+            parts.forEach(part => {
+                part.split(',').forEach(d => {
+                    const n = d.trim();
+                    if (/^\d+$/.test(n)) days.push(n);
+                });
+            });
+            if (days.length > 0) return days.length;
+            // fallback: range "15-17/"
+            const m = nome.match(/(\d+)-(\d+)[\/\)]/);
+            if (m) return Math.max(1, parseInt(m[2]) - parseInt(m[1]) + 1);
+            return 1;
+        }
+
         function fmt(n) {
             if (typeof n !== 'number' || isNaN(n)) return n;
             return Math.round(n).toLocaleString('pt-BR');
@@ -1708,7 +1728,7 @@
             
             // Gráfico de vendas por semana - DADOS REAIS DE CADA PERÍODO
             const semanasConfig = (dadosCompletos._periodos && dadosCompletos._periodos.length > 0)
-                ? dadosCompletos._periodos.map(p => ({ nome: p.nome, totalVendas: p.vendas, lojas: p.nLojas || 1, dias: 1 }))
+                ? dadosCompletos._periodos.map(p => ({ nome: p.nome, totalVendas: p.vendas, lojas: p.nLojas || 1, dias: countDaysInPeriod(p.nome) }))
                 : [
                     { nome: 'Semana 1\n(15-17/01)', totalVendas: 1094, lojas: 10, dias: 3 },
                     { nome: 'Semana 2\n(23-24/01)', totalVendas: 647,  lojas: 10, dias: 2 },
