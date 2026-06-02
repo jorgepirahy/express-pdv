@@ -1324,36 +1324,27 @@
                 document.getElementById('currentFilter').textContent = `🏢 Rede ${rede} | 📅 ${datasFormatadas}`;
             } else {
                 filtroAtual = { tipo: 'calendario', valor: datasSelecionadas };
-                const isPeriodMode = dadosCompletos.datas_disponiveis.length > 0 &&
-                    !/^\d{2}\/\d{2}\/\d{4}$/.test(dadosCompletos.datas_disponiveis[0]);
-
-                if (isPeriodMode) {
-                    // Modo período: dados de lojas vêm do TODOS (tabela de lojas do CONSOLIDADO)
-                    dadosAtuais = [...(dadosCompletos.dadosPorDia['TODOS'] || [])];
-                } else {
-                    // Modo data: consolida lojas pelos dias selecionados
-                    const lojasConsolidadas = {};
-                    datasSelecionadas.forEach(data => {
-                        const lojasDia = dadosCompletos.dadosPorDia[data];
-                        if (lojasDia && Array.isArray(lojasDia)) {
-                            lojasDia.forEach(loja => {
-                                if (!lojasConsolidadas[loja.loja]) {
-                                    lojasConsolidadas[loja.loja] = { loja: loja.loja, abordagens: 0, total: 0, potinhos: 0 };
-                                }
-                                if (typeof loja.abordagens === 'number') lojasConsolidadas[loja.loja].abordagens += loja.abordagens;
-                                lojasConsolidadas[loja.loja].total += loja.total;
-                                if (typeof loja.potinhos === 'number') lojasConsolidadas[loja.loja].potinhos += loja.potinhos;
-                            });
-                        }
-                    });
-                    dadosAtuais = Object.values(lojasConsolidadas).map(loja => ({
-                        loja: loja.loja,
-                        abordagens: loja.abordagens,
-                        total: loja.total,
-                        potinhos: loja.potinhos,
-                        taxa: loja.abordagens > 0 ? `${((loja.total / loja.abordagens) * 100).toFixed(2)}%` : 'Sem dados'
-                    })).sort((a, b) => b.total - a.total);
-                }
+                const lojasConsolidadas = {};
+                datasSelecionadas.forEach(data => {
+                    const lojasDia = dadosCompletos.dadosPorDia[data];
+                    if (lojasDia && Array.isArray(lojasDia)) {
+                        lojasDia.forEach(loja => {
+                            if (!lojasConsolidadas[loja.loja]) {
+                                lojasConsolidadas[loja.loja] = { loja: loja.loja, abordagens: 0, total: 0, potinhos: 0 };
+                            }
+                            if (typeof loja.abordagens === 'number') lojasConsolidadas[loja.loja].abordagens += loja.abordagens;
+                            lojasConsolidadas[loja.loja].total += loja.total;
+                            if (typeof loja.potinhos === 'number') lojasConsolidadas[loja.loja].potinhos += loja.potinhos;
+                        });
+                    }
+                });
+                dadosAtuais = Object.values(lojasConsolidadas).map(loja => ({
+                    loja: loja.loja,
+                    abordagens: loja.abordagens,
+                    total: loja.total,
+                    potinhos: loja.potinhos,
+                    taxa: loja.abordagens > 0 ? `${((loja.total / loja.abordagens) * 100).toFixed(2)}%` : 'Sem dados'
+                })).sort((a, b) => b.total - a.total);
                 const datasFormatadas = datasSelecionadas.join(', ');
                 document.getElementById('currentFilter').textContent = `📅 Mostrando: ${datasFormatadas}`;
             }
@@ -1664,11 +1655,48 @@
                     }
                 }
 
+                // Buscar abas individuais dos períodos em paralelo
+                const periodoLojasData = await Promise.all(periodos.map(async p => {
+                    try {
+                        const tabUrl = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(p.nome)}`;
+                        const res = await fetch(tabUrl);
+                        if (!res.ok) return { nome: p.nome, lojas: [] };
+                        const tabCsv = await res.text();
+                        const tabRows = parseCSV(tabCsv);
+                        if (tabRows.length < 2) return { nome: p.nome, lojas: [] };
+
+                        const h = tabRows[0].map(c => c.trim().toLowerCase());
+                        const cLoja = h.findIndex(c => c.includes('loja'));
+                        const cProm = h.findIndex(c => c.includes('promotora'));
+                        const cAb   = h.findIndex(c => c.includes('abordagem'));
+                        const cVend = h.findIndex(c => c.includes('venda') || c.includes('total') || c.includes('unidade'));
+                        const cDeg  = h.findIndex(c => c.includes('degust') || c.includes('potinho') || c.includes('amostra'));
+                        const cTaxa = h.findIndex(c => c.includes('taxa') || c.includes('convers'));
+
+                        if (cLoja < 0) return { nome: p.nome, lojas: [] };
+
+                        const lojasTab = tabRows.slice(1)
+                            .filter(row => (row[cLoja] || '').trim())
+                            .map(row => ({
+                                loja:       row[cLoja].trim(),
+                                promotora:  cProm >= 0 ? (row[cProm] || 'Sem dados').trim() : 'Sem dados',
+                                abordagens: cAb   >= 0 ? (parseInt(row[cAb])   || 'Sem dados') : 'Sem dados',
+                                total:      cVend >= 0 ? (parseInt(row[cVend]) || 0) : 0,
+                                potinhos:   cDeg  >= 0 ? (parseInt(row[cDeg])  || 'Sem dados') : 'Sem dados',
+                                taxa:       cTaxa >= 0 ? (row[cTaxa] || 'Sem dados').trim() : 'Sem dados'
+                            }));
+                        return { nome: p.nome, lojas: lojasTab };
+                    } catch(e) {
+                        return { nome: p.nome, lojas: [] };
+                    }
+                }));
+
                 // Montar dadosCompletos
                 const TODOS = lojas.map(l => ({ loja: l.loja, abordagens: l.abordagens, total: l.total, potinhos: l.potinhos, taxa: l.taxa }));
                 const dadosPorDia = { TODOS };
-                periodos.forEach(p => {
-                    dadosPorDia[p.nome] = [{ loja: p.nome, abordagens: p.abordagens, total: p.vendas, potinhos: p.degustacoes, taxa: 'Sem dados', promotora: 'Sem dados' }];
+                periodoLojasData.forEach(({ nome, lojas: lojasTab }) => {
+                    dadosPorDia[nome] = lojasTab.length > 0 ? lojasTab
+                        : [{ loja: nome, abordagens: 0, total: 0, potinhos: 0, taxa: 'Sem dados', promotora: 'Sem dados' }];
                 });
 
                 dadosCompletos.dadosPorDia       = dadosPorDia;
@@ -1681,7 +1709,8 @@
                 createFilterOptions();
                 createCalendar();
                 limparFiltros();
-                console.log(`Sync OK: ${periodos.length} períodos | ${lojas.length} lojas | ${promotoras.length} promotoras`);
+                const comLojas = periodoLojasData.filter(p => p.lojas.length > 0).length;
+                console.log(`Sync OK: ${periodos.length} períodos (${comLojas} com dados de lojas) | ${lojas.length} lojas | ${promotoras.length} promotoras`);
             } catch(e) {
                 console.warn('Sync falhou:', e.message, '— usando dados locais.');
             }
