@@ -6,7 +6,7 @@
     <title>Degustação Express Knorr na Rede BH</title>
     
     <!-- Google Fonts - Design System -->
-    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Archivo:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=Mulish:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
@@ -41,8 +41,8 @@
             --text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.3);
             
             /* Tipografia */
-            --font-display: 'Bebas Neue', sans-serif;
-            --font-body: 'Archivo', sans-serif;
+            --pf-font-label: 'Barlow Condensed', 'Mulish', sans-serif;
+            --pf-font-num: 'Mulish', system-ui, sans-serif;
             
             /* Border Radius */
             --radius-lg: 16px;
@@ -59,7 +59,7 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
         body {
-            font-family: var(--font-body);
+            font-family: var(--pf-font-num);
             background: var(--bg-gradient);
             color: var(--white);
             min-height: 100vh;
@@ -85,19 +85,20 @@
         }
         
         .header h1 {
-            font-family: var(--font-display);
+            font-family: var(--pf-font-label);
             font-size: 3.5rem;
+            font-weight: 800;
             letter-spacing: 0.15em;
             text-shadow: var(--text-shadow);
             margin-bottom: 10px;
             color: var(--white);
         }
-        
+
         .header p {
             font-size: 1.2em;
             margin-bottom: 20px;
             color: var(--text-secondary);
-            font-weight: 300;
+            font-weight: 600;
         }
         
         .filter-buttons {
@@ -119,7 +120,7 @@
             font-weight: 700;
             cursor: pointer;
             transition: all 0.3s ease;
-            font-family: var(--font-body);
+            font-family: var(--pf-font-num);
             text-transform: uppercase;
             letter-spacing: 0.05em;
         }
@@ -217,16 +218,16 @@
         .metric-value {
             color: var(--white);
             font-size: 2em;
-            font-weight: 900;
+            font-weight: 800;
             line-height: 1.2;
-            font-family: var(--font-display);
+            font-family: var(--pf-font-num);
         }
         
         .metric-subtitle {
             color: var(--text-secondary);
             font-size: 0.75em;
             margin-top: 5px;
-            font-weight: 300;
+            font-weight: 600;
             line-height: 1.3;
         }
         
@@ -234,14 +235,13 @@
         .tabs {
             display: flex;
             gap: 10px;
-            margin-bottom: 0;
+            margin-bottom: 20px;
             background: var(--card-bg-alt);
-            padding: 25px 25px 0 25px;
-            border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+            padding: 25px;
+            border-radius: var(--radius-lg);
             box-shadow: var(--shadow-md);
             flex-wrap: wrap;
             border: 2px solid var(--border-color);
-            border-bottom: none;
         }
         
         .tab {
@@ -254,7 +254,7 @@
             font-weight: 700;
             color: var(--text-secondary);
             transition: all 0.3s ease;
-            font-family: var(--font-body);
+            font-family: var(--pf-font-num);
             text-transform: uppercase;
             letter-spacing: 0.05em;
         }
@@ -311,7 +311,7 @@
             font-weight: 700;
             padding-bottom: 15px;
             border-bottom: 3px solid var(--accent-green);
-            font-family: var(--font-display);
+            font-family: var(--pf-font-label);
             letter-spacing: 0.05em;
             display: flex;
             align-items: center;
@@ -328,6 +328,38 @@
         .full-width {
             grid-column: 1 / -1;
         }
+
+        .chart-toggle {
+            display: flex;
+            gap: 6px;
+            margin-left: auto;
+        }
+
+        .chart-toggle-btn {
+            background: rgba(255, 255, 255, 0.08);
+            border: 2px solid var(--border-color);
+            color: var(--text-secondary);
+            font-family: var(--pf-font-num);
+            font-weight: 700;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            padding: 6px 14px;
+            border-radius: var(--radius-xl);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .chart-toggle-btn:hover {
+            background: rgba(255, 255, 255, 0.15);
+            color: var(--white);
+        }
+
+        .chart-toggle-btn.active {
+            background: var(--accent-green);
+            border-color: var(--light-green);
+            color: var(--white);
+        }
         
         canvas {
             max-height: 380px;
@@ -337,13 +369,25 @@
         .table-container {
             background: var(--card-bg-alt);
             padding: 30px;
-            border-radius: 0 var(--radius-lg) var(--radius-lg) var(--radius-lg);
+            border-radius: var(--radius-lg);
             box-shadow: var(--shadow-md);
             overflow-x: auto;
             border: 2px solid var(--border-color);
-            border-top: none;
         }
         
+        .table-toolbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .table-toolbar .search-box {
+            margin-bottom: 0;
+        }
+
         .search-box {
             margin-bottom: 25px;
             padding: 15px 20px;
@@ -356,7 +400,7 @@
             outline: none;
             background: rgba(255, 255, 255, 0.1);
             color: var(--white);
-            font-family: var(--font-body);
+            font-family: var(--pf-font-num);
         }
         
         .search-box::placeholder {
@@ -382,6 +426,7 @@
         th {
             padding: 18px;
             text-align: left;
+            font-family: var(--pf-font-label);
             font-weight: 700;
             position: sticky;
             top: 0;
@@ -424,34 +469,40 @@
         
         .top-1 {
             background: rgba(255, 215, 0, 0.2) !important;
-            font-weight: 800;
+            font-weight: 600;
             border-left: 4px solid #FFD700;
         }
-        
+
         .top-1 td {
             color: #FFD700 !important;
         }
-        
+
         .top-2 {
             background: rgba(192, 192, 192, 0.2) !important;
-            font-weight: 800;
+            font-weight: 600;
             border-left: 4px solid #C0C0C0;
         }
-        
+
         .top-2 td {
             color: #E0E0E0 !important;
         }
-        
+
         .top-3 {
             background: rgba(205, 127, 50, 0.2) !important;
-            font-weight: 800;
+            font-weight: 600;
             border-left: 4px solid #CD7F32;
         }
-        
+
         .top-3 td {
             color: #F4A460 !important;
         }
-        
+
+        .top-1 td.num, .top-2 td.num, .top-3 td.num {
+            font-family: var(--pf-font-label);
+            font-weight: 700;
+            font-size: 1.1em;
+        }
+
         .medal {
             font-size: 1.5em;
             margin-right: 8px;
@@ -487,7 +538,8 @@
         }
         
         .modal-header {
-            font-family: var(--font-display);
+            font-family: var(--pf-font-label);
+            font-weight: 800;
             font-size: 2rem;
             letter-spacing: 0.1em;
             color: var(--white);
@@ -540,7 +592,7 @@
             font-size: 0.95rem;
             cursor: pointer;
             transition: all 0.3s ease;
-            font-family: var(--font-body);
+            font-family: var(--pf-font-num);
             text-transform: uppercase;
             letter-spacing: 0.05em;
         }
@@ -560,7 +612,8 @@
         
         .calendar-header {
             text-align: center;
-            font-family: var(--font-display);
+            font-family: var(--pf-font-label);
+            font-weight: 700;
             font-size: 1.6rem;
             letter-spacing: 0.1em;
             color: var(--white);
@@ -663,7 +716,7 @@
             cursor: pointer;
             transition: all 0.3s ease;
             border: none;
-            font-family: var(--font-body);
+            font-family: var(--pf-font-num);
             text-transform: uppercase;
             letter-spacing: 0.05em;
         }
@@ -940,11 +993,21 @@
                         <canvas id="chartTotalSemanas"></canvas>
                     </div>
                     <div class="chart-card full-width">
-                        <div class="chart-title">🏪 Ranking de Lojas por Vendas</div>
+                        <div class="chart-title">🏪 Ranking de Lojas por Vendas
+                            <div class="chart-toggle" id="toggleLojas">
+                                <button type="button" class="chart-toggle-btn active" data-modo="consolidado" onclick="setModoLojas('consolidado')">Consolidado</button>
+                                <button type="button" class="chart-toggle-btn" data-modo="recente" onclick="setModoLojas('recente')">Recente</button>
+                            </div>
+                        </div>
                         <canvas id="chartLojas"></canvas>
                     </div>
                     <div class="chart-card full-width">
-                        <div class="chart-title">📊 Abordagens vs Vendas</div>
+                        <div class="chart-title">📊 Abordagens vs Vendas
+                            <div class="chart-toggle" id="toggleAbordagens">
+                                <button type="button" class="chart-toggle-btn active" data-modo="consolidado" onclick="setModoAbordagens('consolidado')">Consolidado</button>
+                                <button type="button" class="chart-toggle-btn" data-modo="recente" onclick="setModoAbordagens('recente')">Recente</button>
+                            </div>
+                        </div>
                         <canvas id="chartAbordagens"></canvas>
                     </div>
                 </div>
@@ -952,7 +1015,13 @@
 
             <div id="detalhes" class="tab-content">
                 <div class="table-container">
-                    <input type="text" class="search-box" id="searchInput" placeholder="🔍 Buscar..." onkeyup="filterTable()">
+                    <div class="table-toolbar">
+                        <input type="text" class="search-box" id="searchInput" placeholder="🔍 Buscar..." onkeyup="filterTable()">
+                        <div class="chart-toggle" id="toggleDetalhes">
+                            <button type="button" class="chart-toggle-btn active" data-modo="consolidado" onclick="setModoDetalhes('consolidado')">Consolidado</button>
+                            <button type="button" class="chart-toggle-btn" data-modo="recente" onclick="setModoDetalhes('recente')">Recente</button>
+                        </div>
+                    </div>
                     <table id="detailsTable">
                         <thead>
                             <tr id="detailsTableHeader">
@@ -970,7 +1039,13 @@
 
             <div id="promotoras" class="tab-content">
                 <div class="table-container">
-                    <input type="text" class="search-box" id="searchInputPromotora" placeholder="🔍 Buscar por promotora..." onkeyup="filterTablePromotora()">
+                    <div class="table-toolbar">
+                        <input type="text" class="search-box" id="searchInputPromotora" placeholder="🔍 Buscar por promotora..." onkeyup="filterTablePromotora()">
+                        <div class="chart-toggle" id="togglePromotoras">
+                            <button type="button" class="chart-toggle-btn active" data-modo="consolidado" onclick="setModoPromotoras('consolidado')">Consolidado</button>
+                            <button type="button" class="chart-toggle-btn" data-modo="recente" onclick="setModoPromotoras('recente')">Recente</button>
+                        </div>
+                    </div>
                     <table id="promotorasTable">
                         <thead>
                             <tr>
@@ -1467,15 +1542,18 @@
         function populateTable() {
             const tbody = document.getElementById('tableBody');
             const header = document.getElementById('detailsTableHeader');
-            if (filtroAtual.tipo === 'loja') {
+            tbody.innerHTML = '';
+            const usarRecente = modoDetalhes === 'recente';
+            const dados = usarRecente ? [...getUltimoPeriodoDados()].sort((a, b) => b.total - a.total) : dadosAtuais;
+            if (!usarRecente && filtroAtual.tipo === 'loja') {
                 header.innerHTML = '<th>Dia</th><th>Abordagens</th><th>Total Vendas</th><th>Degustação</th><th>Taxa Conv.</th>';
             } else {
                 header.innerHTML = '<th>Loja</th><th>Abordagens</th><th>Total Vendas</th><th>Degustação</th><th>Taxa Conv.</th>';
             }
             let totalAbordagens = 0, totalVendas = 0, totalPotinhos = 0;
             let temAbordagens = false, temPotinhos = false;
-            
-            dadosAtuais.forEach((row, index) => {
+
+            dados.forEach((row, index) => {
                 // Somar apenas valores numéricos
                 if (typeof row.abordagens === 'number') {
                     totalAbordagens += row.abordagens;
@@ -1486,14 +1564,14 @@
                     totalPotinhos += row.potinhos;
                     temPotinhos = true;
                 }
-                
+
                 const tr = document.createElement('tr');
                 let rowClass = '', medal = '';
                 if (index === 0) { rowClass = 'top-1'; medal = '<span class="medal">🥇</span>'; }
                 else if (index === 1) { rowClass = 'top-2'; medal = '<span class="medal">🥈</span>'; }
                 else if (index === 2) { rowClass = 'top-3'; medal = '<span class="medal">🥉</span>'; }
                 tr.className = rowClass;
-                tr.innerHTML = `<td>${medal}<strong>${row.loja}</strong></td><td>${typeof row.abordagens === 'number' ? fmt(row.abordagens) : row.abordagens}</td><td><strong>${fmt(row.total)}</strong></td><td>${typeof row.potinhos === 'number' ? fmt(row.potinhos) : row.potinhos}</td><td><strong>${row.taxa}</strong></td>`;
+                tr.innerHTML = `<td>${medal}<strong>${row.loja}</strong></td><td class="num">${typeof row.abordagens === 'number' ? fmt(row.abordagens) : row.abordagens}</td><td class="num"><strong>${fmt(row.total)}</strong></td><td class="num">${typeof row.potinhos === 'number' ? fmt(row.potinhos) : row.potinhos}</td><td class="num"><strong>${row.taxa}</strong></td>`;
                 tbody.appendChild(tr);
             });
             
@@ -1516,36 +1594,40 @@
             }
         }
 
+        function agregarPromotorasPorLojas(lojasArr) {
+            const promotorasMap = {};
+            lojasArr.forEach(loja => {
+                if (!promotorasMap[loja.promotora]) promotorasMap[loja.promotora] = { promotora: loja.promotora, loja: loja.loja, abordagens: 0, total: 0, potinhos: 0 };
+                if (typeof loja.abordagens === 'number') promotorasMap[loja.promotora].abordagens += loja.abordagens;
+                promotorasMap[loja.promotora].total += loja.total;
+                if (typeof loja.potinhos === 'number') promotorasMap[loja.promotora].potinhos += loja.potinhos;
+            });
+            return Object.values(promotorasMap).map(p => {
+                const taxa = p.abordagens > 0 ? (p.total / p.abordagens * 100).toFixed(2) + '%' : 'Sem dados';
+                const pontuacao = (p.total * 0.5) + (p.abordagens * 0.2) + (p.potinhos * 0.3);
+                return { ...p, taxa, pontuacao_str: pontuacao.toFixed(1), pontuacao_total: pontuacao };
+            }).sort((a, b) => b.pontuacao_total - a.pontuacao_total);
+        }
+
         function populateTablePromotora() {
             const tbody = document.getElementById('tableBodyPromotora');
             tbody.innerHTML = '';
             let dadosPromotoras = [];
-            if (filtroAtual.tipo === 'calendario' && datasSelecionadas && datasSelecionadas.length > 0) {
-                const promotorasMap = {};
+            if (modoPromotoras === 'recente') {
+                dadosPromotoras = agregarPromotorasPorLojas(getUltimoPeriodoDados());
+            } else if (filtroAtual.tipo === 'calendario' && datasSelecionadas && datasSelecionadas.length > 0) {
+                const lojasFiltradas = [];
                 datasSelecionadas.forEach(data => {
                     const lojasDia = dadosCompletos.dadosPorDia[data];
-                    if (lojasDia && Array.isArray(lojasDia)) {
-                        lojasDia.forEach(loja => {
-                            if (!promotorasMap[loja.promotora]) promotorasMap[loja.promotora] = { promotora: loja.promotora, loja: loja.loja, abordagens: 0, total: 0, potinhos: 0 };
-                            // Somar apenas se for número
-                            if (typeof loja.abordagens === 'number') promotorasMap[loja.promotora].abordagens += loja.abordagens;
-                            promotorasMap[loja.promotora].total += loja.total;
-                            if (typeof loja.potinhos === 'number') promotorasMap[loja.promotora].potinhos += loja.potinhos;
-                        });
-                    }
+                    if (lojasDia && Array.isArray(lojasDia)) lojasFiltradas.push(...lojasDia);
                 });
-                dadosPromotoras = Object.values(promotorasMap).map(p => {
-                    const taxa = p.abordagens > 0 ? (p.total / p.abordagens * 100).toFixed(2) + '%' : 'Sem dados';
-                    const pontuacao = (p.total * 0.5) + (p.abordagens * 0.2) + (p.potinhos * 0.3);
-                    return { ...p, taxa, pontuacao_str: pontuacao.toFixed(1), pontuacao_total: pontuacao };
-                });
-                dadosPromotoras.sort((a, b) => b.pontuacao_total - a.pontuacao_total);
+                dadosPromotoras = agregarPromotorasPorLojas(lojasFiltradas);
             } else {
                 dadosPromotoras = [...dadosCompletos.dadosPorPromotora];
             }
             let totalAbordagens = 0, totalVendas = 0, totalPotinhos = 0;
             let temAbordagens = false, temPotinhos = false;
-            
+
             dadosPromotoras.forEach((row, index) => {
                 if (typeof row.abordagens === 'number') {
                     totalAbordagens += row.abordagens;
@@ -1562,7 +1644,7 @@
                 else if (index === 1) { rowClass = 'top-2'; medal = '<span class="medal">🥈</span>'; }
                 else if (index === 2) { rowClass = 'top-3'; medal = '<span class="medal">🥉</span>'; }
                 tr.className = rowClass;
-                tr.innerHTML = `<td>${medal}<strong>${row.promotora}</strong></td><td><strong style=\"color: #4ade80; font-size: 1.2em;\">${row.pontuacao_str} pts</strong></td><td style=\"text-align: center;\">${row.loja || '-'}</td><td>${typeof row.abordagens === 'number' ? fmt(row.abordagens) : row.abordagens}</td><td><strong>${fmt(row.total)}</strong></td><td>${typeof row.potinhos === 'number' ? fmt(row.potinhos) : row.potinhos}</td><td><strong>${row.taxa}</strong></td>`;
+                tr.innerHTML = `<td>${medal}<strong>${row.promotora}</strong></td><td class="num"><strong style=\"color: #4ade80; font-size: 1.2em;\">${row.pontuacao_str} pts</strong></td><td style=\"text-align: center;\">${row.loja || '-'}</td><td class="num">${typeof row.abordagens === 'number' ? fmt(row.abordagens) : row.abordagens}</td><td class="num"><strong>${fmt(row.total)}</strong></td><td class="num">${typeof row.potinhos === 'number' ? fmt(row.potinhos) : row.potinhos}</td><td class="num"><strong>${row.taxa}</strong></td>`;
                 tbody.appendChild(tr);
             });
             
@@ -1737,21 +1819,73 @@
             return rows.filter(r => r.some(c => c.trim()));
         }
 
+        let modoLojas = 'consolidado';
+        let modoAbordagens = 'consolidado';
+        let modoDetalhes = 'consolidado';
+        let modoPromotoras = 'consolidado';
+
+        function getUltimoPeriodoDados() {
+            const disponiveis = dadosCompletos.datas_disponiveis;
+            if (!disponiveis || disponiveis.length === 0) return [];
+            const ultimo = disponiveis[disponiveis.length - 1];
+            const lojasDia = dadosCompletos.dadosPorDia[ultimo];
+            return Array.isArray(lojasDia) ? lojasDia : [];
+        }
+
+        function renderChartLojas(dados) {
+            dados = dados || dadosAtuais;
+            if (charts.lojas) charts.lojas.destroy();
+            const semFiltro = filtroAtual.tipo === 'nenhum';
+            const base = modoLojas === 'recente' ? getUltimoPeriodoDados() : dados;
+            const dadosLojas = (modoLojas === 'recente' || semFiltro) ? [...base].sort((a, b) => b.total - a.total).slice(0, 10) : base;
+            charts.lojas = new Chart(document.getElementById('chartLojas').getContext('2d'), {
+                type: 'bar', data: { labels: dadosLojas.map(l => l.loja), datasets: [{ label: 'Total de Vendas', data: dadosLojas.map(l => l.total), backgroundColor: 'rgba(93, 216, 93, 1)', borderColor: 'rgba(63, 184, 63, 1)', borderWidth: 2, borderRadius: 8 }] },
+                options: { responsive: true, maintainAspectRatio: true, indexAxis: 'y', plugins: { legend: { display: false }, datalabels: { anchor: 'end', align: 'right', color: '#fff', font: { family: 'Mulish', weight: '800', size: 12 }, formatter: (value) => fmt(value) } }, scales: { x: { beginAtZero: true, ticks: { color: '#b8d4c8', callback: (v) => fmt(v) }, grid: { color: 'rgba(255, 255, 255, 0.1)' } }, y: { ticks: { color: '#b8d4c8' }, grid: { color: 'rgba(255, 255, 255, 0.05)' } } } }
+            });
+        }
+
+        function renderChartAbordagens(dados) {
+            dados = dados || dadosAtuais;
+            if (charts.abordagens) charts.abordagens.destroy();
+            const semFiltro = filtroAtual.tipo === 'nenhum';
+            const base = modoAbordagens === 'recente' ? getUltimoPeriodoDados() : dados;
+            const dadosAbordagens = (modoAbordagens === 'recente' || semFiltro) ? [...base].sort((a, b) => b.total - a.total).slice(0, 10) : base;
+            charts.abordagens = new Chart(document.getElementById('chartAbordagens').getContext('2d'), {
+                type: 'bar', data: { labels: dadosAbordagens.map(l => l.loja), datasets: [{ label: 'Abordagens', data: dadosAbordagens.map(l => l.abordagens), backgroundColor: 'rgba(255, 140, 0, 0.85)', borderColor: 'rgba(255, 140, 0, 1)', borderWidth: 2, borderRadius: 8 }, { label: 'Vendas', data: dadosAbordagens.map(l => l.total), backgroundColor: 'rgba(93, 216, 93, 1)', borderColor: 'rgba(63, 184, 63, 1)', borderWidth: 2, borderRadius: 8 }] },
+                options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { position: 'top', labels: { padding: 15, font: { size: 13, weight: 'bold' }, color: '#b8d4c8' } }, datalabels: { anchor: 'end', align: 'end', color: '#fff', font: { family: 'Mulish', weight: '800', size: 12 }, formatter: (value) => typeof value === 'number' ? fmt(value) : value } }, scales: { y: { beginAtZero: true, ticks: { color: '#b8d4c8', callback: v => fmt(v) }, grid: { color: 'rgba(255, 255, 255, 0.1)' } }, x: { ticks: { color: '#b8d4c8' }, grid: { color: 'rgba(255, 255, 255, 0.05)' } } } }
+            });
+        }
+
+        function setModoLojas(modo) {
+            modoLojas = modo;
+            document.querySelectorAll('#toggleLojas .chart-toggle-btn').forEach(b => b.classList.toggle('active', b.dataset.modo === modo));
+            renderChartLojas();
+        }
+
+        function setModoAbordagens(modo) {
+            modoAbordagens = modo;
+            document.querySelectorAll('#toggleAbordagens .chart-toggle-btn').forEach(b => b.classList.toggle('active', b.dataset.modo === modo));
+            renderChartAbordagens();
+        }
+
+        function setModoDetalhes(modo) {
+            modoDetalhes = modo;
+            document.querySelectorAll('#toggleDetalhes .chart-toggle-btn').forEach(b => b.classList.toggle('active', b.dataset.modo === modo));
+            populateTable();
+        }
+
+        function setModoPromotoras(modo) {
+            modoPromotoras = modo;
+            document.querySelectorAll('#togglePromotoras .chart-toggle-btn').forEach(b => b.classList.toggle('active', b.dataset.modo === modo));
+            populateTablePromotora();
+        }
+
         function updateCharts(dados) {
             Object.values(charts).forEach(chart => { if (chart) chart.destroy(); });
             charts = {};
-            const semFiltro = filtroAtual.tipo === 'nenhum';
-            const dadosLojas = semFiltro ? [...dados].sort((a, b) => b.total - a.total).slice(0, 10) : dados;
-            charts.lojas = new Chart(document.getElementById('chartLojas').getContext('2d'), {
-                type: 'bar', data: { labels: dadosLojas.map(l => l.loja), datasets: [{ label: 'Total de Vendas', data: dadosLojas.map(l => l.total), backgroundColor: 'rgba(93, 216, 93, 1)', borderColor: 'rgba(63, 184, 63, 1)', borderWidth: 2, borderRadius: 8 }] },
-                options: { responsive: true, maintainAspectRatio: true, indexAxis: 'y', plugins: { legend: { display: false }, datalabels: { anchor: 'end', align: 'right', color: '#fff', font: { weight: 'bold', size: 12 }, formatter: (value) => fmt(value) } }, scales: { x: { beginAtZero: true, ticks: { color: '#b8d4c8', callback: (v) => fmt(v) }, grid: { color: 'rgba(255, 255, 255, 0.1)' } }, y: { ticks: { color: '#b8d4c8' }, grid: { color: 'rgba(255, 255, 255, 0.05)' } } } }
-            });
-            const dadosAbordagens = semFiltro ? [...dados].sort((a, b) => b.total - a.total).slice(0, 10) : dados;
-            charts.abordagens = new Chart(document.getElementById('chartAbordagens').getContext('2d'), {
-                type: 'bar', data: { labels: dadosAbordagens.map(l => l.loja), datasets: [{ label: 'Abordagens', data: dadosAbordagens.map(l => l.abordagens), backgroundColor: 'rgba(93, 216, 93, 0.4)', borderColor: 'rgba(93, 216, 93, 0.8)', borderWidth: 2, borderRadius: 8 }, { label: 'Vendas', data: dadosAbordagens.map(l => l.total), backgroundColor: 'rgba(63, 184, 63, 1)', borderColor: 'rgba(93, 216, 93, 1)', borderWidth: 2, borderRadius: 8 }] },
-                options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { position: 'top', labels: { padding: 15, font: { size: 13, weight: 'bold' }, color: '#b8d4c8' } }, datalabels: { anchor: 'end', align: 'end', color: '#fff', font: { weight: 'bold', size: 12 }, formatter: (value) => typeof value === 'number' ? fmt(value) : value } }, scales: { y: { beginAtZero: true, ticks: { color: '#b8d4c8', callback: v => fmt(v) }, grid: { color: 'rgba(255, 255, 255, 0.1)' } }, x: { ticks: { color: '#b8d4c8' }, grid: { color: 'rgba(255, 255, 255, 0.05)' } } } }
-            });
-            
+            renderChartLojas(dados);
+            renderChartAbordagens(dados);
+
             // Gráfico de vendas por semana - DADOS REAIS DE CADA PERÍODO
             const semanasConfig = (dadosCompletos._periodos && dadosCompletos._periodos.length > 0)
                 ? dadosCompletos._periodos.map(p => ({ nome: p.nome, totalVendas: p.vendas, lojas: p.nLojas || 1, dias: countDaysInPeriod(p.nome) }))
@@ -1765,15 +1899,7 @@
                     { nome: 'Semana 7\n(27-28/03)', totalVendas: 405,  lojas: 7,  dias: 2 }
                 ];
             
-            let semanasParaExibir;
-            if (semFiltro) {
-                semanasParaExibir = semanasConfig.slice(-5);
-            } else if (filtroAtual.tipo === 'calendario' && datasSelecionadas && datasSelecionadas.length > 0) {
-                const filtrados = semanasConfig.filter(s => datasSelecionadas.includes(s.nome));
-                semanasParaExibir = filtrados.length > 0 ? filtrados : semanasConfig;
-            } else {
-                semanasParaExibir = semanasConfig;
-            }
+            const semanasParaExibir = semanasConfig.slice(-5);
             const dadosSemanas = semanasParaExibir.map(config => {
                 const mediaPorLojaDia = config.totalVendas / (config.lojas * config.dias);
                 return {
